@@ -183,4 +183,102 @@ The “feel” of the detector is mostly audio:
 
 ## What Goes Into EasyEDA (Minimal Analog Version)
 
-### Sheet 1 (Do firs
+### Sheet 1 (Do first)
+Title: Coil Connector + Protection + VMID + Test Points
+
+Add:
+- J1 coil connector with the logical pins (TX+, TX-, RX+, RX-, SHIELD)
+- RX protection (series resistors, ESD)
+- VMID generator and VMID buffer
+- test points
+
+Test points to include:
+- RX_IN+
+- RX_IN-
+- VMID
+- 3V3A (analog rail)
+- GND
+- SHIELD_DRAIN
+
+Also add headers:
+- TX_OUT+ / TX_OUT- (for external TX drive during V0.1)
+- ADC_RXP / ADC_RXN (to NUCLEO ADC pins)
+
+### Sheet 2 (Second)
+Title: RX Gain + ADC Interface
+
+Add:
+- optional internal op-amp usage connections (OPAMP1 and OPAMP2 pins)
+- gain configuration options (firmware selectable or jumper selectable)
+- optional anti-alias RC footprints (DNP allowed)
+- ADC connections to NUCLEO pins
+
+### Sheet 3 (Later)
+Title: TX Driver (V0.2)
+
+Add:
+- MOSFET driver stage
+- current sense footprint
+- protection (snubber or TVS)
+- TX enable safety net
+
+---
+
+## Universal Coil Support (What is configurable, what is not)
+
+### Not configurable in software
+- coil resistance
+- coil inductance
+- coil mechanical balance
+
+These are physical.
+
+### Configurable in firmware (this is how we support many coils)
+- TX frequency list and dwell times
+- TX amplitude, soft-start ramp
+- TX current limiting behavior (if sensed)
+- RX gain steps (via internal op-amps or external switching)
+- I/Q filter time constants (recovery speed)
+- baseline subtraction and ground tracking speed
+- per-frequency phase offset calibration
+
+---
+
+## Bring-up Safety Checklist ✅
+
+Before powering anything:
+- coil shield wiring plan is correct (one end only)
+- test points are present
+
+First power-on:
+- verify VMID is stable at about half supply
+- verify RX inputs sit near VMID with coil connected
+
+First TX test (low power):
+- confirm RX ADC never clips
+- increase TX power slowly
+- confirm baseline subtraction works in firmware
+
+If anything clips:
+- lower RX gain
+- lower TX amplitude
+- increase headroom before trying again
+
+---
+
+## Definitions (So everyone uses the same words)
+
+- VMID: mid-supply bias voltage (example: 1.65V on a 3.3V system)
+- RX+ RX-: coil receive pair
+- TX+ TX-: coil transmit pair
+- I/Q: in-phase and quadrature components from lock-in demod
+- Baseline: the normal coupling and ground response that we subtract
+
+---
+
+## Next Document Links
+- 01 Coil Interface Standard
+- 02 Requirements
+- 03 Bring-up Plan
+- 04 Test Protocol
+- 05 Troubleshooting
